@@ -1,0 +1,1 @@
+This is a practice project for getting to grips with the basics of vulkan, and also serves as somewhere for me to experiment with different shading techniques such as shadowmapping, so alot of this is very broken and very bad, and as of now, ive had no time to revisit this due to college.
