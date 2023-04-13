@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 
+//terribly made basic OBJ file reader
+//remake later 
+
 namespace MeshTools {
 
 	struct MeshVertex{

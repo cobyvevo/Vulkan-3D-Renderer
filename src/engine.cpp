@@ -3,10 +3,7 @@
 
 #include <vk_mem_alloc.h>
 #include <stb_image.h>
-
 #include "engine.hpp"
-
-//test
 #include "meshtools.hpp"
 
 static std::vector<char> readFile(const std::string& filename) {
@@ -62,39 +59,18 @@ bool Mesh::Load(const char* path) {
 		std::cout << lm_v->pos[0] << ", " << lm_v->pos[1] << ", " << lm_v->pos[2] << std::endl;
 		count++;
 	}
-
-
-
-	//vertices.resize(3)
-	//vertices[0].pos = {0.0f, 0.0f, 0.0f};
-	//vertices[1].pos = {0.0f, 0.5f, 0.0f};
-	//vertices[2].pos = {0.5f, 0.0f, 0.0f};
-
-	//glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
-	//projection[1][1] *= -1;
-
-	//vertices[0].pos *= projection;
-	//vertices[1].pos *= projection;
-	//vertices[2].pos *=	projection;
-
-   // test.load_from_file("assets/cube.obj");
-
 	return true;
 }
 
 void Material::Setup(const char* texture_path) {
-	//tex.image = load_texture_file(texture_path);
-	//tex = create_texture(&tex);
-	//gpupipeline = &graphicsPipeline;
+	//texture loading for future
 }
 
 void Object::Setup(const char* mesh_path) {
-	//mesh loading*******
-	//mesh.Load(mesh_path);
-	//upload_mesh(mesh);
+	//mesh loading for future
 }
 
-//OBJECT RELATED SHIT (TODO: refactor code so all the object stuff is in another script)
+//TODO: refactor code so all the object stuff is in another script
 
 void Object::SetPosition(glm::vec3 pos) {
 	transform = glm::translate(glm::mat4(1.f), pos);
@@ -108,24 +84,6 @@ void Object::SetRotation() {
 	
 }
 
-//
-
-//SCENE CONTROLS
-/*
-void Scene::New_Material(const char* texturepath, std::string name) {
-	//mat
-	auto find_mat = materials.find(name);
-	if (find_mat == materials.end()) {
-		Material newmaterial;	
-		newmaterial.Setup(texturepath);
-
-		materials[name] = newmaterial;
-	} else {
-		//newobject.material = &(*find_mat).second;
-	}
-
-}*/
-
 void MainEngine::SCENE_new_material(Scene* sc,const char* texture_path, std::string name) { //well, this sucks
 
 	auto find_mat = sc->materials.find(name);
@@ -134,17 +92,12 @@ void MainEngine::SCENE_new_material(Scene* sc,const char* texture_path, std::str
 		newmaterial.tex.image = load_texture_file(texture_path);
 		create_texture(&newmaterial.tex);
 		newmaterial.gpupipeline = graphicsPipeline_textured;
-
 		sc->materials[name] = newmaterial;
-
-	} else {
-		//newobject.material = &(*find_mat).second;
 	}
 
 }
 
 Object* MainEngine::SCENE_new_object(Scene* sc,std::string mesh_path, std::string name, std::string material_name) {
-	//Object obj = sc->New_Object(meshpath.name,material_name);
 	Object* newobject = new Object;
 	newobject->name = name;
 	newobject->transform = glm::translate(glm::mat4(1.f), glm::vec3(0.0f,0.0f,0.0f));
@@ -185,11 +138,10 @@ Object* MainEngine::SCENE_new_object(Scene* sc,std::string mesh_path, std::strin
 	sc->objects.push_back(newobject);
 
 	/*
-	you have NO FUCKING IDEA the hours of pain i just went though. turns out, a pointer to an object within
+	you have NO IDEA the hours of pain i just went though. turns out, a pointer to an object within
 	a vector is prone to completely crashing your program at random times, and ive spend about 4 hours 
 	trying to figure this out. the worst part is that i saw quite a few people recommend doing this, so i didnt
 	even think that this wouldve been a problem.
-	you live you learn, i guess. jesus fucking christ
 	*/
 
 	return newobject;
@@ -205,7 +157,6 @@ Object Scene::New_Object(const char* meshpath, std::string name, std::string mat
 	
 		Mesh newmesh;
 		newmesh.Load(meshpath);
-		//engine_target->upload_mesh(newmesh);
 
 		//upload_mesh(newmesh); NEEDS MAIN ENGINE CONNECTION
 
@@ -228,19 +179,6 @@ Object Scene::New_Object(const char* meshpath, std::string name, std::string mat
 
 	return newobject;
 }
-
-//
-
-
-//mesh = new Mesh();
-//testmesh->Load("assets/testasset.obj");
-//testimage = load_texture_file("assets/tex.png");
-//testtexture = create_texture_from_allimage(&testimage);
-
-//testmesh->vertices.resize(3);
-//testmesh->vertices[0].pos = {0.0f, 0.0f, 0.0f};
-//testmesh->vertices[1].pos = {0.0f, 0.5f, 0.0f};
-//testmesh->vertices[2].pos = {0.5f, 0.0f, 0.0f};
 
 void VertInputStateDesc::GetDefaultState() {
 	vk::VertexInputBindingDescription mainBinding{};
@@ -337,7 +275,7 @@ AllocatedImage MainEngine::create_allocated_image(vk::Format format, vk::Flags<v
 		imgview.viewType = vk::ImageViewType::e2D;
 		imgview.format = format;
 
-		imgview.subresourceRange.aspectMask = imageaspect;//vk::ImageAspectFlagBits::eColor;
+		imgview.subresourceRange.aspectMask = imageaspect; //vk::ImageAspectFlagBits::eColor;
 		imgview.subresourceRange.baseMipLevel = 0;
 		imgview.subresourceRange.levelCount = 1;
 		imgview.subresourceRange.baseArrayLayer = 0;
@@ -367,9 +305,6 @@ Along with the camera UBO, pass along the shadowmap image sampler on binding 2:
 First render the shadowmap
 Next, barrier the shadowmap so that its eShaderReadOnlyOptimal
 It should in theory be readable through the descriptor set
-
-
-
 
 ok update, everything works but the actual image is layout type of undefined, may be a sync issue
 trying to set sync with the subpass dependencies but cant wrap my head around it
@@ -484,7 +419,7 @@ AllocatedImage MainEngine::load_texture_file(const char* file) {
 	return newtexture;
 }
 
-Texture MainEngine::create_texture_from_allimage(AllocatedImage* target) {
+Texture MainEngine::create_texture_from_allimage(AllocatedImage* target) // NOW UNUSED, REMOVE LATER
 	Texture tex;
 
 	vk::DescriptorSetAllocateInfo allocinfo{};
@@ -622,10 +557,7 @@ void MainEngine::CreateSwapchain() {
 	swapCreateInfo.oldSwapchain = nullptr;
 
 	swapchain = core->gpudevice.createSwapchainKHR(swapCreateInfo);
-	//std::cout << "the chain" << std::endl;
-
 	swapchainImages = core->gpudevice.getSwapchainImagesKHR(swapchain);
-	//std::cout << "the chain imagres" << std::endl;
 
 	swapchainImageViews.resize(swapchainImages.size());
 
@@ -653,7 +585,7 @@ void MainEngine::CreateSwapchain() {
 
 	}
 
-	//make depth
+	//make depthimage
 	depthFormat = vk::Format::eD32Sfloat;
 
 	vk::Extent3D depthImgExtent = {swapchainExtent.width,swapchainExtent.height,1};
@@ -958,33 +890,6 @@ void MainEngine::CreateDescriptorSets() {
 		allocateinfo_obj.pSetLayouts = &descriptorSetLayout_objectdata;
 
 		frames[i].objectdescriptor = core->gpudevice.allocateDescriptorSets(allocateinfo_obj).front();
-
-		//write allocation
-
-		/*
-
-	vk::SamplerCreateInfo sampler{};
-	sampler.magFilter = vk::Filter::eNearest;
-	sampler.minFilter = vk::Filter::eNearest;
-	//sampler.addressModeU = vk::SamplerAddressMode::eRepeat;
-	//sampler.addressModeV = vk::SamplerAddressMode::eRepeat;	
-	//sampler.addressModeW = vk::SamplerAddressMode::eRepeat;
-
-	tex->sampler = core->gpudevice.createSampler(sampler);
-
-	vk::DescriptorImageInfo imageInfo{};
-	imageInfo.sampler = tex->sampler;
-	imageInfo.imageView = tex->image.imageview;
-	imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-	vk::WriteDescriptorSet write{};
-	write.dstBinding = 0;
-	write.descriptorCount = 1;
-	write.dstSet = tex->descriptor;
-	write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-	write.pImageInfo = &imageInfo;
-
-		*/
 
 		//cam
 		vk::DescriptorBufferInfo camerabufferinfo{};
@@ -1351,8 +1256,6 @@ void MainEngine::InitShadowmap(ShadowMapper* target) {
 	vk::Extent3D depthImgExtent = {100,100,1};
 	target->extent = depthImgExtent;
 
-	std::cout << "a" << std::endl;
-
 	target->depthImage = create_allocated_image(
 		depthFormat, 
 		vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled, 
@@ -1362,8 +1265,6 @@ void MainEngine::InitShadowmap(ShadowMapper* target) {
 		vk::ImageAspectFlagBits::eDepth
 	);
 
-	std::cout << "b" << std::endl;
-	
 	vk::FramebufferCreateInfo fbinfo{};
 	fbinfo.renderPass = renderpass_shadow;
 	fbinfo.attachmentCount = 1;
@@ -1372,52 +1273,16 @@ void MainEngine::InitShadowmap(ShadowMapper* target) {
 	fbinfo.height = 100;
 	fbinfo.layers = 1;
 
-	std::cout << "c" << std::endl;
-	
 	target->framebuffer = core->gpudevice.createFramebuffer(fbinfo);
 	std::cout << "made shadow framebuffer" << std::endl;
 }
 
-void MainEngine::initial() {// ######## I WILL REMOVE THIS LATER ###############
+void MainEngine::initial() {
 	scene_draw_target = &default_scene;
-
-	//testscene.engine_target = &this;
-	//testscene.New_Material("assets/tex.png", "SmileTexture");
-
-
-
-	//SCENE_new_material(&testscene,"assets/tex.png", "SmileTexture");
-	//SCENE_new_material(&testscene,"assets/tabletexture.png", "Table_Texture");
-
-	//testobject = SCENE_new_object(&testscene,"assets/cube.obj", "Cube", "SmileTexture");
-  //  SCENE_new_object(&testscene,"assets/table.obj", "TestAsset", "Table_Texture");
-  //  SCENE_new_object(&testscene,"assets/ball.obj", "TestAsset2", "none");
-
-
-
-//	testmesh = new Mesh();
-	//testmesh->Load("assets/testasset.obj");
-
-	//testimage = load_texture_file("assets/tex.png");
-	//testtexture = create_texture_from_allimage(&testimage);
-
-	//testmesh->vertices.resize(3);
-	//testmesh->vertices[0].pos = {0.0f, 0.0f, 0.0f};
-	//testmesh->vertices[1].pos = {0.0f, 0.5f, 0.0f};
-	//testmesh->vertices[2].pos = {0.5f, 0.0f, 0.0f};
-
-	//upload_mesh(testmesh);
-
 }
 
-void MainEngine::step() { // ######## I WILL REMOVE THIS LATER ###############
-
-	//glm::vec3 objcenter = {sin(tick*4) * 10.0f,0.0f,0.0f};
-	//glm::vec3 sc = {cos(tick*2) * 5.0f,1.0f,1.0f};
-
-	//testobject->transform = glm::translate(glm::mat4(1.f), objcenter);
-	//testobject->transform = glm::scale(testobject->transform,sc);
-
+void MainEngine::step() { 
+// ######## I WILL REMOVE THIS LATER ###############
 }
 
 void MainEngine::run_gpu_instruction(std::function<void(vk::CommandBuffer cmd)>&& function) {
@@ -1485,35 +1350,23 @@ static void WindowResizedCallback(GLFWwindow* win, int w, int h) {
 }
 
 void MainEngine::ReCreateSwapchain() {
-
 	core->gpudevice.waitIdle();
-	//vk::Result res = core->gpudevice.waitForFences(frameFlightNum, render_fences.data(), true, UINT32_MAX);
-
-    for (auto thing : swapchainImageViews) { //lol
+    for (auto thing : swapchainImageViews) {
     	core->gpudevice.destroyImageView(thing, nullptr);
     }
  	for (auto thing : swapchainFramebuffer) {
     	core->gpudevice.destroyFramebuffer(thing, nullptr);
     }
-
     core->gpudevice.destroySwapchainKHR(swapchain, nullptr);
-
     destroy_allocated_image(&depthImage);
-
     CreateSwapchain();
     CreateFramebuffer();
-
 }
 
 void MainEngine::shadowdraw(FrameInfo* current) {
 
 	ShadowMapper* shadowmap = &current->shadows;
-	//std::cout << "a" << std::endl;
-
 	shadowCmdBuffer.reset();
-
-	//std::cout << "b" << std::endl;
-
 	vk::ClearValue depthclearcol{};
 	depthclearcol.depthStencil.depth = 1.0f;
 	vk::ClearValue clearvalues[1] = {depthclearcol};
@@ -1521,11 +1374,7 @@ void MainEngine::shadowdraw(FrameInfo* current) {
 	vk::Rect2D renderrect;
 	vk::Extent2D sextent = {shadowmap->extent.width,shadowmap->extent.height};
 	renderrect.extent = sextent;
-
-	//std::cout << "c" << std::endl;
 	vk::CommandBufferBeginInfo commandbegininfo{};
-
-
 
 	vk::RenderPassBeginInfo begininfo{};
 	begininfo.renderPass = renderpass_shadow;
@@ -1534,22 +1383,21 @@ void MainEngine::shadowdraw(FrameInfo* current) {
 	begininfo.clearValueCount = 1;
 	begininfo.pClearValues = &clearvalues[0];
 
-	//std::cout << "d" << std::endl;
 	shadowCmdBuffer.begin(commandbegininfo);
 	shadowCmdBuffer.beginRenderPass(begininfo, vk::SubpassContents::eInline);
-	//std::cout << "e" << std::endl;
-	vk::Viewport vp;
+
+		vk::Viewport vp;
 	vp.width = (float) shadowmap->extent.width;
 	vp.height = (float) shadowmap->extent.height;
 	vp.maxDepth = 1.0f;
 	shadowCmdBuffer.setViewport(0, 1, &vp);
 	shadowCmdBuffer.setScissor(0, 1, &renderrect);
-//	std::cout << "f" << std::endl;
+
 	Material* oldmaterial = nullptr;
 	Mesh* oldmesh = nullptr;
 
 	shadowCmdBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics,shadowmapPipeline);
-//	std::cout << "g" << std::endl;
+
 	shadowCmdBuffer.bindDescriptorSets(
 		vk::PipelineBindPoint::eGraphics,
 		shadowmapLayout,
@@ -1558,7 +1406,7 @@ void MainEngine::shadowdraw(FrameInfo* current) {
 		0,
 		nullptr
 	);
-	//std::cout << "h" << std::endl;	
+
 	shadowCmdBuffer.bindDescriptorSets(
 		vk::PipelineBindPoint::eGraphics,
 		shadowmapLayout,
@@ -1567,10 +1415,10 @@ void MainEngine::shadowdraw(FrameInfo* current) {
 		0,
 		nullptr
 	);
-	//std::cout << "i" << std::endl;
+
 	for (size_t i = 0; i < scene_draw_target->objects.size(); i++) {
 		Object* obj = scene_draw_target->objects[i];
-		//std::cout << obj->name << std::endl;
+
 		if (obj->mesh != nullptr) {
 
 			if (oldmesh != obj->mesh) {
@@ -1584,14 +1432,14 @@ void MainEngine::shadowdraw(FrameInfo* current) {
 			shadowCmdBuffer.draw(obj->mesh->vertices.size(),1,0,i);
 		}
 	}	
-	//std::cout << "j" << std::endl;
+
 	shadowCmdBuffer.endRenderPass();
 	shadowCmdBuffer.end();
-	//std::cout << "k" << std::endl;
+
 }
 
 void MainEngine::draw() {
-//	std::cout << "draw starting" << std::endl; 
+	//	std::cout << "draw starting" << std::endl; 
 
 	vk::Semaphore& swapchainavailable_S = swapimageavailable_semaphores[currentFlight];
 	vk::Semaphore& rendersubmit_S = rendersubmit_semaphores[currentFlight];
@@ -1617,7 +1465,7 @@ void MainEngine::draw() {
 	vk::CommandBuffer* commandbuffer_current = &cmdBuffers[currentFlight];
 	commandbuffer_current->reset();
 
-	//running cool code before draw
+	//running code before draw
 	FrameInfo currentframe = frames[currentFlight];
 	tick = (tick + 0.0001f);
 	if (tick>3.14159268) tick = 0;
@@ -1700,7 +1548,6 @@ void MainEngine::draw() {
 	Mesh* oldmesh = nullptr;
 
 	//std::cout << "beginning render" << std::endl;
-
 
 	for (size_t i = 0; i < scene_draw_target->objects.size(); i++) {
 		Object* obj = scene_draw_target->objects[i];
@@ -1839,6 +1686,7 @@ void MainEngine::cleanup() {
 
 	SCENE_cleanup(scene_draw_target);
 
+	//used before, when testing on hardcoded images directly
 	//destroy_allocated_image(&testimage);
 	//destroy_allocated_buffer(&testmesh->vertexBuffer);
 	//destroy_texture(&testtexture);
